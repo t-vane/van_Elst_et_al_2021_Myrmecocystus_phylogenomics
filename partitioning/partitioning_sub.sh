@@ -1,32 +1,32 @@
 ################################################################################
 #### 5 PARTITIONING ####
 ################################################################################
-HOME=/global/homes/jg/t_vane02
-SCRIPTS=$HOME/scripts
-TAXON_SET=genus
-WD=$HOME/uce-myrmecocystus/uces/$TAXON_SET/partitioning
+home=/global/homes/jg/t_vane02
+scripts=$home/scripts
+taxon_set=genus
+wd=$home/uce-myrmecocystus/uces/$taxon_set/partitioning
 
-mkdir -p $WD/logs
+mkdir -p $wd/logs
 
 #################################################################
 #### 1 CREATE TRIPLET PARTITIONS FOR EACH LOCUS ####
 #################################################################
-ALIGNMENT=$HOME/uce-myrmecocystus/uces/$TAXON_SET/alignments/concat/mafft-trimal-concat.fas-nex.out # NEXUS-formatted alignment
-LOCUS_INFO=$WD/locuspartitions.nex # NEXUS file with UCE locus information; can be taken from mafft-trimal-concat.fas-part (see alignment section)
+alignment=$home/uce-myrmecocystus/uces/$taxon_set/alignments/concat/mafft-trimal-concat.fas-nex.out # NEXUS-formatted alignment
+locus_info=$wd/locuspartitions.nex # NEXUS file with UCE locus information; can be taken from mafft-trimal-concat.fas-part (see alignment section)
 
-cat $ALIGNMENT $LOCUS_INFO > $WD/alignment-concatenated-partitions.nex
+cat $alignment $locus_info > $wd/alignment-concatenated-partitions.nex
 
 ## Run SWSC-EN
-qsub sync -y -N SWSC-EN -o $WD/logs -e $WD/logs $SCRIPTS/swscen.sh $WD/alignment-concatenated-partitions.nex
+qsub sync -y -N SWSC-EN -o $wd/logs -e $wd/logs $scripts/swscen.sh $wd/alignment-concatenated-partitions.nex
 
 #################################################################
 #### 2 RUN PARTITIONFINDER ####
 #################################################################
-mkdir -p $WD/locus $WD/triplet
+mkdir -p $wd/locus $wd/triplet
 
 ## Two partitioning schemes are run (per triplet and per locus)
-LOCUS_CONF=$WD/partitionfinder_locus.cfg # Configuration file for PartitionFinder2 considering loci as partitions
-TRIPLET_CONF=$WD/partitionfinder_triplet.cfg #Configuration file for PartitionFinder2 considering triplets as partitions
+locus_conf=$wd/partitionfinder_locus.cfg # Configuration file for PartitionFinder2 considering loci as partitions
+triplet_conf=$wd/partitionfinder_triplet.cfg #Configuration file for PartitionFinder2 considering triplets as partitions
 
-qsub -N partitionfinder_locus -o $WD/logs -e $WD/logs $SCRIPTS/partitionfinder.sh $LOCUS_CONF
-qsub -N partitionfinder_triplet -o $WD/logs -e $WD/logs $SCRIPTS/partitionfinder.sh $TRIPLET_CONF
+qsub -N partitionfinder_locus -o $wd/logs -e $wd/logs $scripts/partitionfinder.sh $locus_conf
+qsub -N partitionfinder_triplet -o $wd/logs -e $wd/logs $scripts/partitionfinder.sh $triplet_conf

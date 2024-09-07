@@ -1,30 +1,30 @@
 ################################################################################
 #### UCE EXTRACTION ####
 ################################################################################
-HOME=/global/homes/jg/t_vane02
-SCRIPTS=$HOME/scripts
-WD=$HOME/uce-myrmecocystus/uces
-ASSEMBLY_DIR=$HOME/uce-myrmecocystus/metaspades
-PROBES=$WD/uces/hymenoptera-v2-ANT-SPECIFIC-uce-baits.fasta # UCE probe sequences
+home=/global/homes/jg/t_vane02
+scripts=$home/scripts
+wd=$home/uce-myrmecocystus/uces
+assembly_dir=$home/uce-myrmecocystus/metaspades
+probes=$wd/uces/hymenoptera-v2-ANT-SPECIFIC-uce-baits.fasta # UCE probe sequences
 
-mkdir -p $WD/logs
+mkdir -p $wd/logs
 
 #################################################################
 #### 1 HARVEST UCES FROM PUBLISHED GENOMES ####
 #################################################################
-NT=16
-GENOMES=$WD/uce-harvesting/genomes.txt # List of genome names without file extension
+nt=16
+genomes=$wd/uce-harvesting/genomes.txt # List of genome names without file extension
 
-qsub -sync y -pe smp $NT -N uce_harvesting -o $WD/logs -e $WD/logs $SCRIPTS/uce_harvesting.sh $NT $WD/uce-harvesting $GENOMES $PROBES $ASSEMBLY_DIR
+qsub -sync y -pe smp $nt -N uce_harvesting -o $wd/logs -e $wd/logs $scripts/uce_harvesting.sh $nt $wd/uce-harvesting $genomes $probes $assembly_dir
 
 #################################################################
 #### 2 EXTRACT UCES ####
 #################################################################
-LOCUS_DB=uces.sqlite # Name for the database created in UCE_extraction.sh
-TAXON_SET=genus # A configuration file called taxon-set-$TAXON_SET.conf with a list of samples needs to be present in $WD/uce-extraction
+locus_db=uces.sqlite # Name for the database created in UCE_extraction.sh
+taxon_set=genus # A configuration file called taxon-set-$taxon_set.conf with a list of samples needs to be present in $wd/uce-extraction
 
 ## Match contigs to probes for all samples
-ID=$(qsub -N uce_match_contigs -o $WD/logs -e $WD/logs $SCRIPTS/uce_match_contigs.sh $ASSEMBLY_DIR $PROBES $WD)
+id=$(qsub -N uce_match_contigs -o $wd/logs -e $wd/logs $scripts/uce_match_contigs.sh $assembly_dir $probes $wd)
 ## Extract UCEs for desired taxon set
-qsub -N uce_extraction_$TAXON_SET -o $WD/logs -e $WD/logs -W depend=afterok:$ID $SCRIPTS/uce_extraction.sh $ASSEMBLY_DIR $WD $LOCUS_DB $TAXON_SET
+qsub -N uce_extraction_$taxon_set -o $wd/logs -e $wd/logs -W depend=afterok:$id $scripts/uce_extraction.sh $assembly_dir $wd $locus_db $taxon_set
 

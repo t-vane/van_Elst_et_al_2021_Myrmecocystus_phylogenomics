@@ -9,34 +9,34 @@ set -euo pipefail
 # phyluce needs to be included in $PATH (v1.6.7; https://phyluce.readthedocs.io/en/latest/)
 
 ## Command-line args:
-CONTIG_DIR=$1
-OUT_DIR=$2
-LOCUS_DB=$3
-TAXON_SET=$4
+contig_dir=$1
+out_dir=$2
+locus_db=$3
+taxon_set=$4
 
 ## Report:
 echo -e "\n\n###################################################################"
 date
 echo -e "#### UCE_extractions.sh: Starting script."
-echo -e "#### UCE_extractions.sh: Contig directory: $CONTIG_DIR"
-echo -e "#### UCE_extractions.sh: Output directory: $OUT_DIR"
-echo -e "#### UCE_extractions.sh: Locus database: $LOCUS_DB"
-echo -e "#### UCE_extractions.sh: Taxon set: $TAXON_SET \n\n"
+echo -e "#### UCE_extractions.sh: Contig directory: $contig_dir"
+echo -e "#### UCE_extractions.sh: Output directory: $out_dir"
+echo -e "#### UCE_extractions.sh: Locus database: $locus_db"
+echo -e "#### UCE_extractions.sh: Taxon set: $taxon_set \n\n"
 
 ################################################################################
 #### EXTRACT UCES FROM CONTIGS####
 ################################################################################
-mkdir -p $OUT_DIR/$TAXON_SET
-cd $OUT_DIR/$TAXON_SET
+mkdir -p $out_dir/$taxon_set
+cd $out_dir/$taxon_set
 
 echo -e "#### UCE_extractions.sh: Creating monolithic FASTA file with all loci from all taxa ... \n"
-phyluce_assembly_get_match_counts --locus-db $LOCUS_DB --taxon-list-config $OUT_DIR/taxon-set-$TAXON_SET.conf --taxon-group $TAXON_SET --incomplete-matrix --output $OUT_DIR/$TAXON_SET/$TAXON_SET-taxa-incomplete.conf
-phyluce_assembly_get_fastas_from_match_counts --contigs $CONTIG_DIR --locus-db $LOCUS_DB --match-count-output $OUT_DIR/$TAXON_SET/$TAXON_SET-taxa-incomplete.conf --output $OUT_DIR/$TAXON_SET/$TAXON_SET-taxa-incomplete.fasta --incomplete-matrix $OUT_DIR/$TAXON_SET/$TAXON_SET-taxa-incomplete.incomplete
+phyluce_assembly_get_match_counts --locus-db $locus_db --taxon-list-config $out_dir/taxon-set-$taxon_set.conf --taxon-group $taxon_set --incomplete-matrix --output $out_dir/$taxon_set/$taxon_set-taxa-incomplete.conf
+phyluce_assembly_get_fastas_from_match_counts --contigs $contig_dir --locus-db $locus_db --match-count-output $out_dir/$taxon_set/$taxon_set-taxa-incomplete.conf --output $out_dir/$taxon_set/$taxon_set-taxa-incomplete.fasta --incomplete-matrix $out_dir/$taxon_set/$taxon_set-taxa-incomplete.incomplete
 
 echo -e "#### UCE_extractions.sh: Exploding monolithic FASTA file into one file per taxon ... \n"
-phyluce_assembly_explode_get_fastas_file --input $OUT_DIR/$TAXON_SET/$TAXON_SET-taxa-incomplete.fasta --output $OUT_DIR/$TAXON_SET/exploded-fastas-all
-cd $OUT_DIR/$TAXON_SET/exploded-fasta-all
-for i in $OUT_DIR/$TAXON_SET/exploded-fastas-all/*
+phyluce_assembly_explode_get_fastas_file --input $out_dir/$taxon_set/$taxon_set-taxa-incomplete.fasta --output $out_dir/$taxon_set/exploded-fastas-all
+cd $out_dir/$taxon_set/exploded-fasta-all
+for i in $out_dir/$taxon_set/exploded-fastas-all/*
 do 
 	sed -r -i 's/>uce-[0-9]+_/>/g;s/ \|uce-[0-9]+//g' $i
 done

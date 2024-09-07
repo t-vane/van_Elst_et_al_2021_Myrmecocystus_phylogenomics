@@ -1,21 +1,21 @@
 ################################################################################
 #### READ CLEANING ####
 ################################################################################
-HOME=/global/homes/jg/t_vane02
-SCRIPTS=$HOME/scripts
-WD=$HOME/uce-myrmecocystus/reads
+home=/global/homes/jg/t_vane02
+scripts=$home/scripts
+wd=$home/uce-myrmecocystus/reads
 
-mkdir -p $WD/logs
+mkdir -p $wd/logs
 
-NT=16
-CONF=$WD/illumiprocessor.conf # Configuration/adapter file for newly generated reads
-CONF_SRA=$WD/illumiprocessor_SRA.conf # Configuration/adapter file for reads downloaded from SRA
-R1_PATTERN=_1
-R2_PATTERN=_2
+nt=16
+conf=$wd/illumiprocessor.conf # Configuration/adapter file for newly generated reads
+conf_sra=$wd/illumiprocessor_SRA.conf # Configuration/adapter file for reads downloaded from SRA
+r1_pattern=_1
+r2_pattern=_2
 
 ## Read cleaning for newly generated reads
-qsub -pe smp $NT -N read_cleaning -o $WD/logs -e $WD/logs  $SCRIPTS/read_cleaning.sh $NT $WD/raw-fastq $WD/clean-fastq $CONF $R1_PATTERN $R2_PATTERN
+qsub -pe smp $nt -N read_cleaning -o $wd/logs -e $wd/logs  $scripts/read_cleaning.sh $nt $wd/raw-fastq $wd/clean-fastq $conf $r1_pattern $r2_pattern
 ## Read cleaning for SRA reads
-qsub -pe smp $NT -N read_cleaning_SRA -o $WD/logs -e $WD/logs $SCRIPTS/read_cleaning.sh $NT $WD/raw-fastq-SRA $WD/clean-fastq $CONF_SRA $R1_PATTERN $R2_PATTERN
+qsub -pe smp $nt -N read_cleaning_SRA -o $wd/logs -e $wd/logs $scripts/read_cleaning.sh $nt $wd/raw-fastq-SRA $wd/clean-fastq $conf_SRA $r1_pattern $r2_pattern
 
 

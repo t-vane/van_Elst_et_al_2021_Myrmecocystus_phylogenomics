@@ -3,38 +3,38 @@
 ################################################################################
 ## Software:
 # spruceup needs to be included in $PATH (https://github.com/marekborowiec/spruceup)
-AMAS=/global/homes/jg/t_vane02/software/AMAS-master/amas/AMAS.py # (https://github.com/marekborowiec/AMAS)
+amas=/global/homes/jg/t_vane02/software/AMAS-master/amas/AMAS.py # (https://github.com/marekborowiec/AMAS)
 
-HOME=/global/homes/jg/t_vane02
-SCRIPTS=$HOME/scripts
-TAXON_SET=genus
-WD=$HOME/uce-myrmecocystus/uces/$TAXON_SET/alignments
+home=/global/homes/jg/t_vane02
+scripts=$home/scripts
+taxon_set=genus
+wd=$home/uce-myrmecocystus/uces/$taxon_set/alignments
 
-mkdir -p $WD/logs
+mkdir -p $wd/logs
 
 #################################################################
 #### 1 ALIGN AND TRIM SINGLE LOCI ####
 #################################################################
-NT=12
+nt=12
 
 ## Create list of loci 
-ls $HOME/uce-myrmecocystus/uces/$TAXON_SET/exploded-fastas-all > $WD/loci.txt
+ls $home/uce-myrmecocystus/uces/$taxon_set/exploded-fastas-all > $wd/loci.txt
 ## Align and trim loci
-qsub -sync y -pe smp $NT -t 1-$(cat $WD/loci.txt | wc -l) -N alignment_trimming -o $WD/logs -e $WD/logs $SCRIPTS/alignment_trimming.sh $NT $WD/loci.txt $WD
+qsub -sync y -pe smp $nt -t 1-$(cat $wd/loci.txt | wc -l) -N alignment_trimming -o $wd/logs -e $wd/logs $scripts/alignment_trimming.sh $nt $wd/loci.txt $wd
 
 #################################################################
 #### 2 CONCATENATE ALIGNMENTS AND TRIM ####
 #################################################################
 ## Concatenate all alignments
-mkdir -p $WD/concat
-python $AMAS concat -i $WD/*-mafft-trimal -f fasta -d dna -t $WD/concat/mafft-trimal-concat.fas -p $WD/concat/mafft-trimal-concat.fas-part
+mkdir -p $wd/concat
+python $amas concat -i $wd/*-mafft-trimal -f fasta -d dna -t $wd/concat/mafft-trimal-concat.fas -p $wd/concat/mafft-trimal-concat.fas-part
 
 ## Trim with spruceup
-SPRUCEUP_CONF=$WD/concat/spruceup.conf # Manually created configuration file for spruceup
-spruceup.py $SPRUCEUP_CONF
+spruceup_conf=$wd/concat/spruceup.conf # Manually created configuration file for spruceup
+spruceup.py $spruceup_conf
 
 ## Convert final concatenated alignment to NEXUS and PHYLIP format
-cd $WD/concat
-python $AMAS convert -i $WD/concat/mafft-trimal-concat.fas -f fasta -d dna -u nexus
-python $AMAS convert -i $WD/concat/mafft-trimal-concat.fas -f fasta -d dna -u phylip
+cd $wd/concat
+python $amas convert -i $wd/concat/mafft-trimal-concat.fas -f fasta -d dna -u nexus
+python $amas convert -i $wd/concat/mafft-trimal-concat.fas -f fasta -d dna -u phylip
 
