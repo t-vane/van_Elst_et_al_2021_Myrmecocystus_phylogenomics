@@ -28,7 +28,7 @@ mkdir -p $wd/uces/$taxon_set/exploded-fastas-90
 grep -c ">" $wd/uces/$taxon_set/exploded-fastas-all/* | awk -v myvar=$wd/uces/$taxon_set/exploded-fastas-90 -F : '$2 > 37 {print ("cp "$1" myvar/"$1)}' | /bin/bash
 
 ##################################################
-### 7.1.2 ALIGNMENT ####
+### 1.2 ALIGNMENT ####
 ##################################################
 mkdir -p $wd/uces/$taxon_set/mafft-aligned-90
 
@@ -57,7 +57,7 @@ python $amas convert -i $wd/uces/$taxon_set/mafft-aligned-90/concat/mafft-trimal
 python $amas summary -i $wd/uces/$taxon_set/mafft-aligned-90/concat/mafft-trimal-spruceup-concat.fas -f fasta -d dna -o $wd/uces/$taxon_set/mafft-aligned-90/concat/mafft-trimal-spruceup-concat-summary.txt
 
 #################################################################
-#### 7 DIVERGENCE TIME ESTIMATION ####
+#### 2 DIVERGENCE TIME ESTIMATION ####
 #################################################################
 mkdir -p $wd/divergence_dating/logs
 
@@ -76,7 +76,7 @@ do
 done
 
 ##################################################
-### 7.2.1 RUN BASEML ####
+### 2.1 RUN BASEML ####
 ##################################################
 mkdir -p $wd/divergence_dating/concatenated $wd/divergence_dating/astral
 
@@ -89,7 +89,7 @@ qsub -N baseml_concat -o $wd/divergence_dating/logs -e $wd/divergence_dating/log
 qsub -N baseml_astral -o $wd/divergence_dating/logs -e $wd/divergence_dating/logs $scripts/baseml.sh $astral_ctl
 
 ##################################################
-### 7.2.2 RUN MCMCTREE ####
+### 2.2 RUN MCMCTREE ####
 ##################################################
 
 ## Run MCMCTree with usedata=3 to get estimate of Gradient and Hessian

@@ -90,7 +90,7 @@ qsub -sync y -t 1-$(cat $wd/ML/single-locus/output/supergenes/bin_multiple_loci.
 ##################################################
 ### 2.3 SPECIES TREE ESTIMATION WITH ASTRAL FOR BINNED AND UNBINNED LOCI ####
 ##################################################
-MAPPING=$wd/astral/mapping.txt # Assigns specimens to species
+mapping=$wd/astral/mapping.txt # Assigns specimens to species
 mkdir -p $wd/astral/unbinned $wd/astral/binned
 
 ## Create input trees file for unbinned analysis in ASTRAL
@@ -123,7 +123,7 @@ done
 for i in binnend unbinned
 do
 	$nwed $wd/astral/$i/gene_trees.txt 'i & b <=20' o > $wd/astral/$i/gene_trees_bs20.txt
-	qsub -N species_tree_astral_$i -o $wd/logs -e $wd/logs $scripts/species_tree_astral.sh $wd/astral/$i/gene_trees_bs20.txt $MAPPING $wd/astral/$i/speciestree_$i.tre
+	qsub -N species_tree_astral_$i -o $wd/logs -e $wd/logs $scripts/species_tree_astral.sh $wd/astral/$i/gene_trees_bs20.txt $mapping $wd/astral/$i/speciestree_$i.tre
 
 done
 
